@@ -1,4 +1,4 @@
-module some1.ch/gpsfix
+module EverydayRoadster/gpx-timetagger
 
 go 1.21.1
 
