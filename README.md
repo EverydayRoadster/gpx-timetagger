@@ -19,4 +19,4 @@ The time interval is provided as a valid "ParseDuration" string, as accepted by 
 ## Requirements
 This program needs the Go language installed on the local computer. See https://go.dev/doc/install on how to do that.
 
-To use this program, clone the repository into your local filesystem, open a shell at theat location, and run the Go as indicated above.
+To use this program, clone this repository into your local filesystem, open a shell at theat location, and run the Go as indicated above.
