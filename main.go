@@ -4,6 +4,7 @@ import (
 	"os"
 	"fmt"
 	"time"
+	"path/filepath"
 	"github.com/tkrajina/gpxgo/gpx"
 )
 
@@ -67,6 +68,7 @@ func main(){
 	xmlBytes, err := gpxFile.ToXml(gpx.ToXmlParams{Version: "1.1", Indent: true})
 	check(err)
 	// write GPX XML output
-	err = os.WriteFile(filename + ".converted.gpx", xmlBytes, 0666)
+	filename = filename[0:len(filename)-len(filepath.Ext(filename))]
+	err = os.WriteFile(filename + ".timetagged.gpx", xmlBytes, 0666)
 	check(err)
 }
