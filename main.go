@@ -1,10 +1,11 @@
 package main
 
 import (
-	"os"
 	"fmt"
-	"time"
+	"os"
 	"path/filepath"
+	"time"
+
 	"github.com/tkrajina/gpxgo/gpx"
 )
 
@@ -15,47 +16,46 @@ func usage() {
 }
 
 func check(e error) {
-    if e != nil {
-        panic(e)
-    }
+	if e != nil {
+		panic(e)
+	}
 }
 
-func main(){
+func main() {
 	if len(os.Args) < 3 {
 		usage()
 	}
 
 	// GPX input file
 	filename := os.Args[1]
-	payload,err := os.ReadFile(filename)
+	payload, err := os.ReadFile(filename)
 	check(err)
 
 	// start time for timestamps
-	startTime,err := time.Parse("2006-01-02T15:04:05Z", os.Args[2])
+	startTime, err := time.Parse("2006-01-02T15:04:05Z", os.Args[2])
 	check(err)
 
 	// interval between track points, as duration
 	interval := "1s"
 	if len(os.Args) > 3 {
 		interval = os.Args[3]
-	} 	
-	deltaDuration,err := time.ParseDuration(interval)
+	}
+	deltaDuration, err := time.ParseDuration(interval)
 	check(err)
 
 	// parse input from GPX format
-	gpxFile,err := gpx.ParseBytes(payload)
+	gpxFile, err := gpx.ParseBytes(payload)
 	check(err)
 
 	// start start time for output GPX
 	gpxFile.Time = &startTime
-	fmt.Println("GPX " + gpxFile.Version + " starting " + gpxFile.Time.String() + " with points every " + deltaDuration.String())
 	// current time reflects accumulated intervals
 	currentTime := startTime
 
 	// for each track, segments inside track, all points inside each of the segments
-	for trackIndex, _ := range gpxFile.Tracks {
-		for segIndex, _ := range gpxFile.Tracks[trackIndex].Segments {
-			for pointIndex, _ := range gpxFile.Tracks[trackIndex].Segments[segIndex].Points {
+	for trackIndex := range gpxFile.Tracks {
+		for segIndex := range gpxFile.Tracks[trackIndex].Segments {
+			for pointIndex := range gpxFile.Tracks[trackIndex].Segments[segIndex].Points {
 				// add the timestamp into point
 				gpxFile.Tracks[trackIndex].Segments[segIndex].Points[pointIndex].Timestamp = currentTime
 				// increase increment
@@ -63,12 +63,13 @@ func main(){
 			}
 		}
 	}
+	fmt.Println("GPX " + gpxFile.Version + " starting " + gpxFile.Time.String() + " ending " + currentTime.UTC().String() + " (" + currentTime.Sub(*gpxFile.Time).String() + ") with points every " + deltaDuration.String())
 
 	// create output stream
 	xmlBytes, err := gpxFile.ToXml(gpx.ToXmlParams{Version: "1.1", Indent: true})
 	check(err)
 	// write GPX XML output
-	filename = filename[0:len(filename)-len(filepath.Ext(filename))]
-	err = os.WriteFile(filename + ".timetagged.gpx", xmlBytes, 0666)
+	filename = filename[0 : len(filename)-len(filepath.Ext(filename))]
+	err = os.WriteFile(filename+".timetagged.gpx", xmlBytes, 0666)
 	check(err)
 }
